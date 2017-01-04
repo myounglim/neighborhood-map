@@ -1,0 +1,48 @@
+* {
+    box-sizing: border-box;
+    font-family: Georgia, "Times New Roman", Times, serif;
+}
+.heading {
+    border-bottom: 3px solid lightblue;
+    padding: 8px;
+}
+.search_label {
+    font-size: 1.5em;
+    text-align: center;
+    margin: 0;
+    display: inline-block;
+}
+.search_section {
+    margin-bottom: 4px;
+    padding: 0;
+}
+.search {
+    margin: 0;
+}
+.list_section {
+    background-color: #fff;
+}
+.locations_heading {
+    border: 2px solid #E0E0E0;
+    padding: 14px;
+    font-weight: bold;
+    color: #607D8B;
+}
+.location_item {
+    display: list-item;
+    border-bottom: 2px solid #E0E0E0;
+    width: 100%;
+    text-align: left;
+    line-height: 30px;
+    padding: 8px;
+}
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+}
+li:hover {
+    background-color: lightgrey;
+    cursor: pointer;
+}
