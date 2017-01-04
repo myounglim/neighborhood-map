@@ -15,4 +15,4 @@ Using an organizational JavaScript framework and the Google Map's API, the appli
 
 ## Getting Started
 
-To run, navigate to [GitHub] (https://myounglim.github.io/neighborhood-map/) on your browser. Alternatively, you can download the repo and open _index.html_ from your browser.
+To run, navigate to [here] (https://myounglim.github.io/neighborhood-map/) on your browser. Alternatively, you can download the repo and open _index.html_ from your browser.
