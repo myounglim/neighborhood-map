@@ -186,7 +186,7 @@ function nonce_generate() {
  * https://discussions.udacity.com/t/how-to-make-ajax-request-to-yelp-api/13699/4
  */
 function yelp_call(businessId, index) {
-    var yelp_url = 'http://api.yelp.com/v2/business/' + businessId;
+    var yelp_url = 'https://api.yelp.com/v2/business/' + businessId;
     var YELP_KEY = 'AjrnQAF5szygR6qPyuNXYw';
     var YELP_TOKEN = 'ecH6g864K_8N6ZOId3kH-JPLCXzOAT_u';
     var YELP_KEY_SECRET = 'X3zdDVBezqmcqMp5fb2Kgxk7FWs';
