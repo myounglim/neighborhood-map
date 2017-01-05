@@ -71,7 +71,7 @@ var Location = function(data) {
         animation: google.maps.Animation.DROP
     });
     this.yelpId = data.yelpId;
-}
+};
 
 /* VIEWMODEL */
 var ViewModel = function() {
@@ -100,7 +100,7 @@ var ViewModel = function() {
             infowindow.setContent('<h4>' + marker.title + '</h4>' +
                 '<h6>Total Reviews: ' + marker.yelpReviewCount + '</h6>' +
                 '<img src=' + marker.yelpRatingImg + ' alt=Yelp rating of ' + marker.yelpRating + ' stars' + ' >' +
-                '<h5><a href=' + marker.yelpUrl + ' >' + 'Yelp Page' + '</a></h5>');
+                '<h5><a href=' + marker.yelpUrl + ' target=_blank>' + 'Yelp Page' + '</a></h5>');
             infowindow.open(map, marker);
             // Make sure the marker property is cleared if the infowindow is closed.
             infowindow.addListener('closeclick', function() {
@@ -118,7 +118,7 @@ var ViewModel = function() {
         marker.setAnimation(google.maps.Animation.BOUNCE);
         setTimeout(function() {
             marker.setAnimation(null);
-        }, 2000);
+        }, 700 * 3);
     };
 
     // call populateInfoWindow and setBounceAnimation when user clicks an item on the list
@@ -139,24 +139,24 @@ var ViewModel = function() {
             self.locationList().forEach(function(location) {
                 if (location.title().toLowerCase().includes(filter.toLowerCase())) {
                     filteredArr.push(location);
-                    location.marker.setMap(map);
+                    location.marker.setVisible(true);
                 } else
-                    location.marker.setMap(null);
+                    location.marker.setVisible(false);
             });
             return filteredArr;
         } else {
             self.locationList().forEach(function(location) {
-                location.marker.setMap(map);
+                location.marker.setVisible(true);
             });
             return self.locationList();
         }
     });
 
-}
+};
 
 /*
  * Initializes GoogleMap centering around Los Angeles
- * Set the map height dynamically to be equal to the width
+ * Once the map is initialized, create the viewModel and apply the bindings
  */
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -167,9 +167,24 @@ function initMap() {
         zoom: 12
     });
 
+    // Set the map height dynamically to be equal to the width
     $('#map').css('height', function() {
         return $(this).width();
     });
+
+    var viewModel = new ViewModel();
+    ko.applyBindings(viewModel);
+    viewModel.locationList().forEach(function(location) {
+        yelp_call(location);
+    });
+}
+
+/*
+ * Called when Google Map API fails
+ * Alert the user
+ */
+function mapError() {
+    window.alert('Google Maps has failed to load. Try reloading the page.');
 }
 
 /*
@@ -185,8 +200,8 @@ function nonce_generate() {
  * Credit to Udacity's Mark Nguyen
  * https://discussions.udacity.com/t/how-to-make-ajax-request-to-yelp-api/13699/4
  */
-function yelp_call(businessId, index) {
-    var yelp_url = 'https://api.yelp.com/v2/business/' + businessId;
+function yelp_call(locationObj) {
+    var yelp_url = 'https://api.yelp.com/v2/business/' + locationObj.yelpId;
     var YELP_KEY = 'AjrnQAF5szygR6qPyuNXYw';
     var YELP_TOKEN = 'ecH6g864K_8N6ZOId3kH-JPLCXzOAT_u';
     var YELP_KEY_SECRET = 'X3zdDVBezqmcqMp5fb2Kgxk7FWs';
@@ -209,27 +224,18 @@ function yelp_call(businessId, index) {
         url: yelp_url,
         data: parameters,
         cache: true, // This is crucial to include as well to prevent jQuery from adding on a cache-buster parameter "_=23489489749837", invalidating our oauth-signature
-        dataType: 'jsonp',
-        success: function(results) {
-            // Do stuff with results
-            viewModel.locationList()[index].marker.yelpRating = results.rating;
-            viewModel.locationList()[index].marker.yelpUrl = results.mobile_url;
-            viewModel.locationList()[index].marker.yelpReviewCount = results.review_count;
-            viewModel.locationList()[index].marker.yelpRatingImg = results.rating_img_url;
-        },
-        fail: function() {
-            // Do stuff on fail
-            viewModel.locationList()[index].marker.yelpReviewCount = 'Call to Yelp Api failed...Try refreshing the page';
-        }
+        dataType: 'jsonp'
     };
 
     // Send AJAX query via jQuery library.
-    $.ajax(settings);
-}
-
-initMap();
-var viewModel = new ViewModel();
-ko.applyBindings(viewModel);
-for (var i = 0; i < viewModel.locationList().length; i++) {
-    yelp_call(viewModel.locationList()[i].yelpId, i);
+    $.ajax(settings)
+        .done(function(results) {
+            locationObj.marker.yelpRating = results.rating;
+            locationObj.marker.yelpUrl = results.mobile_url;
+            locationObj.marker.yelpReviewCount = results.review_count;
+            locationObj.marker.yelpRatingImg = results.rating_img_url;
+        })
+        .fail(function(error) {
+            window.alert('Yelp API failed to load. Try reloading the page.');
+        });
 }
